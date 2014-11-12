@@ -68,6 +68,33 @@ $(document).ready(function() {
                 </aside>
             {{/link-to}}
         {{/each}}
+    </section>
+
+    <section class="object-list active-users">
+        <h4 class="object-list-title">Inactive users</h4>
+
+        {{#each inactiveUsers itemController="settings/users/user"}}
+            {{#link-to 'settings.users.user' this class="object-list-item" }}
+                <span class="object-list-item-figure" {{bind-attr style=image}}>
+                    <span class="hidden">Photo of {{unbound name}}</span>
+                </span>
+
+                <div class="object-list-item-body">
+                    <span class="name">
+                        {{name}}
+                    </span>
+                    <br>
+                    <span class="description">Last seen: {{unbound last_login}}</span>
+                </div>
+                <aside class="object-list-item-aside">
+                    {{#unless isAuthor}}
+                        {{#each roles}}
+                            <span class="role-label {{unbound lowerCaseName}}">{{name}}</span>
+                        {{/each}}
+                    {{/unless}}
+                </aside>
+            {{/link-to}}
+        {{/each}}
 
     </section>
 {{/view}}

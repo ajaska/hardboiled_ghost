@@ -44,6 +44,7 @@ var SettingsGeneralController = Ember.ObjectController.extend({
                 this.set('postsPerPage', 5);
             }
         }
+        
     }
 });
 
