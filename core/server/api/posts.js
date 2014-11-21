@@ -5,6 +5,7 @@ var Promise         = require('bluebird'),
     dataProvider    = require('../models'),
     canThis         = require('../permissions').canThis,
     errors          = require('../errors'),
+    user            = require('../models').User,
     utils           = require('./utils'),
 
     docName         = 'posts',
@@ -107,7 +108,6 @@ posts = {
                 if (options.include) {
                     options.include = prepareInclude(options.include);
                 }
-
                 return dataProvider.Post.edit(checkedPostData.posts[0], options);
             }).then(function (result) {
                 if (result) {
@@ -120,7 +120,6 @@ posts = {
                     }
                     return {posts: [post]};
                 }
-
                 return Promise.reject(new errors.NotFoundError('Post not found.'));
             });
         }, function () {
@@ -139,21 +138,26 @@ posts = {
      */
     add: function add(object, options) {
         options = options || {};
-
         return canThis(options.context).add.post().then(function () {
             return utils.checkObject(object, docName).then(function (checkedPostData) {
                 if (options.include) {
                     options.include = prepareInclude(options.include);
                 }
+                var user_id = options;
+                console.log(user_id);
+                userInstance = options.context.user !== undefined ? user.findOne(object, options) : false;
+                console.log(userInstance);
 
+            // tagInstance = options.tag !== undefined ? ghostBookshelf.model('Tag').forge({slug: options.tag}) : false,
+            // authorInstance = options.author !== undefined ? ghostBookshelf.model('User').forge({slug: options.author}) : false;
                 return dataProvider.Post.add(checkedPostData.posts[0], options);
             }).then(function (result) {
                 var post = result.toJSON();
-
                 if (post.status === 'published') {
                     // When creating a new post that is published right now, signal the change
                     post.statusChanged = true;
                 }
+
                 return {posts: [post]};
             });
         }, function () {

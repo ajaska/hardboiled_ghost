@@ -165,7 +165,6 @@ CanThisResult.prototype.beginCheck = function (context) {
         // Resolve null if no context.app
         appPermissionLoad = Promise.resolve(null);
     }
-
     // Wait for both user and app permissions to load
     permissionsLoad = Promise.all([userPermissionLoad, appPermissionLoad]).then(function (result) {
         return {

@@ -77,6 +77,14 @@
             {{input type="text" value=user.title id="user-title" placeholder="Title" autocapitalize="off" autocorrect="off" autocomplete="off"}}
             <p>What's your position in Hardboiled?</p>
         </div>
+        <div class="form-group for-checkbox">
+            <label for="permalinks">Active Status</label>
+            <label class="checkbox" for="permalinks">
+                {{input id="permalinks" name="user[active]" type="checkbox" checked=isActive}}
+                <span class="input-toggle-component"></span>
+                <p>Include the date in your post URLs</p>
+            </label>
+        </div>    
         <div class="form-group">
             <label for="user-website">Website</label>
             {{input type="url" value=user.website id="user-website" autocapitalize="off" autocorrect="off" autocomplete="off"}}
