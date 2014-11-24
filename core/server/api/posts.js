@@ -104,11 +104,20 @@ posts = {
      */
     edit: function edit(object, options) {
         return canThis(options.context).edit.post(options.id).then(function () {
+            var checkedPostDataCopy;
+            var postStatus = object.posts[0].status;
             return utils.checkObject(object, docName).then(function (checkedPostData) {
                 if (options.include) {
                     options.include = prepareInclude(options.include);
                 }
-                return dataProvider.Post.edit(checkedPostData.posts[0], options);
+                var user_id = options.context.user;
+                return dataProvider.User.findOne({id: user_id}, {context: options.context});    
+            }).then(function (user) {
+                var userRole = user.related('roles').models[0];
+                if (userRole.attributes.name === 'Author' && postStatus === 'published') {
+                    return Promise.reject(new errors.NoPermissionError('You do not have permission to add posts.'));
+                }
+                return dataProvider.Post.edit(checkedPostDataCopy.posts[0], options);
             }).then(function (result) {
                 if (result) {
                     var post = result.toJSON();
@@ -139,18 +148,21 @@ posts = {
     add: function add(object, options) {
         options = options || {};
         return canThis(options.context).add.post().then(function () {
+            var checkedPostDataCopy;
+            var postStatus = object.posts[0].status;
             return utils.checkObject(object, docName).then(function (checkedPostData) {
+                checkedPostDataCopy = checkedPostData;
                 if (options.include) {
                     options.include = prepareInclude(options.include);
                 }
-                var user_id = options;
-                console.log(user_id);
-                userInstance = options.context.user !== undefined ? user.findOne(object, options) : false;
-                console.log(userInstance);
-
-            // tagInstance = options.tag !== undefined ? ghostBookshelf.model('Tag').forge({slug: options.tag}) : false,
-            // authorInstance = options.author !== undefined ? ghostBookshelf.model('User').forge({slug: options.author}) : false;
-                return dataProvider.Post.add(checkedPostData.posts[0], options);
+                var user_id = options.context.user;
+                return dataProvider.User.findOne({id: user_id}, {context: options.context});    
+            }).then(function (user) {
+                var userRole = user.related('roles').models[0];
+                if (userRole.attributes.name === 'Author' && postStatus === 'published') {
+                    return Promise.reject(new errors.NoPermissionError('You do not have permission to add posts.'));
+                }
+                return dataProvider.Post.add(checkedPostDataCopy.posts[0], options);
             }).then(function (result) {
                 var post = result.toJSON();
                 if (post.status === 'published') {
